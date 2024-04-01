@@ -11,7 +11,7 @@ def sample_category():
 def test_category_initialization(sample_category):
     assert sample_category.name == "Test Category"
     assert sample_category.description == "Test description"
-    assert len(sample_category.products) == 0
+    assert len(sample_category.get_products()) == 0
 
 def test_count_categories(sample_category):
     assert Category.total_categories == 1
@@ -29,7 +29,7 @@ def test_product_initialization(sample_product):
 
 def test_count_products(sample_product, sample_category):
     sample_category.add_product(sample_product)  # Добавляем продукт в категорию
-    assert len(Category.unique_products) == 1
+    assert len(sample_category.get_products_info()) == 1  # Проверяем количество продуктов в категории
 
 # Запустить тесты
 if __name__ == "__main__":
