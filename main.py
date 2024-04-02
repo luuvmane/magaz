@@ -21,15 +21,23 @@ class Category:
         """Геттер для получения информации о товарах в категории."""
         products_info = []
         for product in self.__products:
-            info = f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
-            products_info.append(info)
+            products_info.append(str(product))
         return products_info
+
+    def __len__(self):
+        """Магический метод для получения количества товаров в категории."""
+        return len(self.__products)
+
+    def __str__(self):
+        """Магический метод для строкового представления категории."""
+        return f"{self.name}, количество продуктов: {len(self)} шт."
+
 
 class Product:
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.__price = price
+        self.price = price
         self.quantity = quantity
 
     @staticmethod
@@ -55,16 +63,29 @@ class Product:
         """Делитер для цены товара."""
         del self.__price
 
+    def __str__(self):
+        """Магический метод для строкового представления товара."""
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        if isinstance(other, Product):
+            total_quantity = self.quantity + other.quantity
+            total_price = (self.price * self.quantity + other.price * other.quantity)
+            return Product("Сумма товаров", "Сумма товаров", total_price, total_quantity)
+        else:
+            raise TypeError("Неверный тип операнда")
+
 
 category1 = Category("Электроника", "Девайсы и гаджеты")
 product1 = Product("Ноутбук", "Высокопроизводительный ноутбук с SSD", 1200.50, 10)
 product2 = Product("Смартфон", "Последняя модель с OLED-дисплеем", 800.99, 20)
 
-
 category1.add_product(product1)
 category1.add_product(product2)
-
 
 products_info = category1.get_products_info()
 for info in products_info:
     print(info)
+
+result_product = product1 + product2
+print( result_product)
