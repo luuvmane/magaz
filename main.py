@@ -10,6 +10,9 @@ class Category:
 
     def add_product(self, product):
         """Метод для добавления товара в категорию."""
+        if not isinstance(product, (Product, Smartphone, Grass)):
+            raise TypeError("Можно добавлять только объекты типа Product и его наследников")
+
         self.__products.append(product)
         Category.unique_products.add(product.name)
 
@@ -68,20 +71,39 @@ class Product:
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
-        if isinstance(other, Product):
-            total_quantity = self.quantity + other.quantity
-            total_price = (self.price * self.quantity + other.price * other.quantity)
-            return Product("Сумма товаров", "Сумма товаров", total_price, total_quantity)
-        else:
-            raise TypeError("Неверный тип операнда")
+        if type(self) != type(other):  # Проверяем типы объектов
+            raise TypeError("Невозможно сложить товары разных классов")
 
+        total_quantity = self.quantity + other.quantity
+        total_price = (self.price * self.quantity + other.price * other.quantity)
+        return Product("Сумма товаров", "Сумма товаров", total_price, total_quantity)
+
+class Smartphone(Product):
+    def __init__(self, name, description, price, quantity, performance, model, storage_capacity, color):
+        super().__init__(name, description, price, quantity)
+        self.performance = performance
+        self.model = model
+        self.storage_capacity = storage_capacity
+        self.color = color
+
+    def __str__(self):
+        return f"{self.name}, {self.model}, {self.color}, {self.price} руб. Остаток: {self.quantity} шт."
+
+
+class Grass(Product):
+    def __init__(self, name, description, price, quantity, country_of_origin, sprouting_period, color):
+        super().__init__(name, description, price, quantity)
+        self.country_of_origin = country_of_origin
+        self.sprouting_period = sprouting_period
+        self.color = color
+
+    def __str__(self):
+        return f"{self.name}, {self.country_of_origin}, {self.color}, {self.price} руб. Остаток: {self.quantity} шт."
 
 category1 = Category("Электроника", "Девайсы и гаджеты")
 product1 = Product("Ноутбук", "Высокопроизводительный ноутбук с SSD", 1200.50, 10)
 product2 = Product("Смартфон", "Последняя модель с OLED-дисплеем", 800.99, 20)
 
-category1.add_product(product1)
-category1.add_product(product2)
 
 products_info = category1.get_products_info()
 for info in products_info:
