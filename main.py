@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-
 class LogMixin:
     def __repr__(self):
         attributes = ', '.join(f"{key}={value}" for key, value in self.__dict__.items())
