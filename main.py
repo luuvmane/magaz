@@ -4,13 +4,11 @@ class LogMixin:
         attributes = ', '.join(f"{key}={value}" for key, value in self.__dict__.items())
         return f"{self.__class__.__name__}({attributes})"
 
-class AbstractProduct(ABC, LogMixin):
-    def __init__(self, name, description, price, quantity):
-        self.name = name
-        self.description = description
-        self.price = price
-        self.quantity = quantity
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print(f"Создан объект класса {self.__class__.__name__}: {self.__repr__()}")
 
+class AbstractProduct(ABC, LogMixin):
     @abstractmethod
     def __str__(self):
         """Абстрактный метод для строкового представления продукта."""
@@ -19,6 +17,12 @@ class AbstractProduct(ABC, LogMixin):
     @abstractmethod
     def __add__(self, other):
         """Абстрактный метод для сложения продуктов."""
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def create_product(name, description, price, quantity):
+        """Абстрактный метод для создания продукта."""
         pass
 
 class Category:
@@ -59,6 +63,13 @@ class Category:
         return f"{self.name}, количество продуктов: {len(self)} шт."
 
 class Product(AbstractProduct):
+    def __init__(self, name, description, price, quantity):
+        self.name = name
+        self.description = description
+        self.price = price
+        self.quantity = quantity
+
+
     def __str__(self):
         """Метод для строкового представления товара."""
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
@@ -69,9 +80,14 @@ class Product(AbstractProduct):
 
         total_quantity = self.quantity + other.quantity
         total_price = (self.price * self.quantity + other.price * other.quantity)
-        return Product("Сумма товаров", "Сумма товаров", total_price, total_quantity)
+        return Product.create_product("Сумма прайса техники", "Колличество товаров", total_price, total_quantity)
 
-class Smartphone(AbstractProduct):
+    @staticmethod
+    def create_product(name, description, price, quantity):
+        """Метод для создания продукта."""
+        return Product(name, description, price, quantity)
+
+class Smartphone(Product):
     def __init__(self, name, description, price, quantity, performance, model, storage_capacity, color):
         super().__init__(name, description, price, quantity)
         self.performance = performance
@@ -88,9 +104,14 @@ class Smartphone(AbstractProduct):
 
         total_quantity = self.quantity + other.quantity
         total_price = (self.price * self.quantity + other.price * other.quantity)
-        return Smartphone("Сумма товаров", "Сумма товаров", total_price, total_quantity, "", "", "", "")
+        return Smartphone.create_product("Сумма товара", "Сумма товаров", total_price, total_quantity, "", "", "", "")
 
-class Grass(AbstractProduct):
+    @staticmethod
+    def create_product(name, description, price, quantity, performance, model, storage_capacity, color):
+        """Метод для создания продукта."""
+        return Smartphone(name, description, price, quantity, performance, model, storage_capacity, color)
+
+class Grass(Product):
     def __init__(self, name, description, price, quantity, country_of_origin, sprouting_period, color):
         super().__init__(name, description, price, quantity)
         self.country_of_origin = country_of_origin
@@ -106,16 +127,20 @@ class Grass(AbstractProduct):
 
         total_quantity = self.quantity + other.quantity
         total_price = (self.price * self.quantity + other.price * other.quantity)
-        return Grass("Сумма товаров", "Сумма товаров", total_price, total_quantity, "", "", "")
+        return Grass.create_product("Сумма товара", "Сумма товаров", total_price, total_quantity, "", "", "")
 
+    @staticmethod
+    def create_product(name, description, price, quantity, country_of_origin, sprouting_period, color):
+        """Метод для создания продукта."""
+        return Grass(name, description, price, quantity, country_of_origin, sprouting_period, color)
 
 category1 = Category("Электроника", "Девайсы и гаджеты")
-product1 = Product("Ноутбук", "Высокопроизводительный ноутбук с SSD", 1200.50, 10)
-product2 = Product("Смартфон", "Последняя модель с OLED-дисплеем", 800.99, 20)
-
+product1 = Product.create_product("Ноутбук", "Высокопроизводительный ноутбук с SSD", 1200.50, 10)
+product2 = Product.create_product("Смартфон", "Последняя модель с OLED-дисплеем", 800.99, 20)
+grass_product = Grass.create_product("Трава газонная", "Зеленая трава для газона", 15.99, 50, "Россия", "Май-июнь", "Зеленый")
 category1.add_product(product1)
 category1.add_product(product2)
-
+print(grass_product)
 products_info = category1.get_products_info()
 for info in products_info:
     print(info)
