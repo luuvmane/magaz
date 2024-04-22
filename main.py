@@ -39,6 +39,8 @@ class Category:
         """Метод для добавления товара в категорию."""
         if not isinstance(product, AbstractProduct):
             raise TypeError("Можно добавлять только объекты типа AbstractProduct и его наследников")
+        if product.quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
 
         self.__products.append(product)
         Category.unique_products.add(product.name)
@@ -61,6 +63,14 @@ class Category:
     def __str__(self):
         """Магический метод для строкового представления категории."""
         return f"{self.name}, количество продуктов: {len(self)} шт."
+
+    def average_price(self):
+        """Метод для подсчета среднего ценника всех товаров в категории."""
+        try:
+            total_price = sum(product.price for product in self.__products)
+            return total_price / len(self.__products)
+        except ZeroDivisionError:
+            return 0
 
 class Product(AbstractProduct):
     def __init__(self, name, description, price, quantity):
